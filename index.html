@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Fetch Example</title>
+    <script>
+        async function fetchListingsBasedOnRarity(page = 1, listings = []) {
+            const rarity = document.getElementById('rarity-select').value;
+            const cardType = document.getElementById('type-select').value;
+            const response = await fetch(`http://127.0.0.1:5000/fetch-listings?type=${cardType}&rarity=${rarity}&page=${page}`);
+            const data = await response.json();
+
+            listings = listings.concat(data.listings);
+            displayListings(listings);
+            return listings;
+
+            // recursive call to return all pages
+            
+            // if (data.total_pages > page) {
+            //     return await fetchListingsBasedOnRarity(page + 1, listings);
+            // } else {
+            //     displayListings(listings);
+            //     return listings;
+            // }
+        }
+
+        function displayListings(listings) {
+            const listingsTableBody = document.querySelector('#listingsTable tbody');
+            listingsTableBody.innerHTML = ''; // Clear existing listings
+
+            listings.forEach((listing) => {
+                const profit = calculateProfit(listing.best_buy_price, listing.best_sell_price);
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><img src="${listing.item.baked_img}" alt="Card Image" style="width:100px;height:auto;"></td>
+                    <td>${listing.item.name}</td>
+                    <td>${listing.item.rarity}</td>
+                    <td>${listing.best_buy_price}</td>
+                    <td>${listing.best_sell_price}</td>
+                    <td>Placeholder</td>
+                    <td>${profit}</td>
+                `;
+                listingsTableBody.appendChild(row);
+            });
+        }
+
+        function calculateProfit(buyPrice, sellPrice) {
+            let profit = (sellPrice * 0.9) - buyPrice; // Includes 10% tax on sell price
+            return Math.round(profit);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchListingsBasedOnRarity(); // Fetch listings based on the initial rarity selection
+        });
+    </script>
+</head>
+<body>
+    <h1>Market Listings</h1>
+    <!-- Type selection dropdown -->
+    <label for="type-select">Choose a type:</label>
+    <select name="cardType" id="type-select" onchange="fetchListingsBasedOnRarity()">
+        <option value="mlb_card" selected>MLB Card</option>
+        <option value="equipment">Equipment</option>
+        <option value="stadium">Stadium</option>
+        <option value="sponsorship">Sponsorship</option>
+        <option value="unlockable">Unlockable</option>
+    </select>
+    <!-- Rarity selection dropdown -->
+    <label for="rarity-select">Choose a rarity:</label>
+    <select name="rarity" id="rarity-select" onchange="fetchListingsBasedOnRarity()">
+        <option value="diamond" selected>Diamond</option>
+        <option value="gold">Gold</option>
+        <option value="silver">Silver</option>
+        <option value="bronze">Bronze</option>
+        <option value="common">Common</option>
+    </select>
+    <table id="listingsTable">
+        <thead>
+            <tr>
+                <th>Card</th>
+                <th>Name</th>
+                <th>Rarity</th>
+                <th>Buy</th>
+                <th>Sell</th>
+                <th>Quick Sell</th>
+                <th>Profit (Including 10% Tax)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Listings will be added here dynamically -->
+        </tbody>
+    </table>
+</body>
+</html>
