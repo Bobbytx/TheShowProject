@@ -1,4 +1,4 @@
-#!/Users/bobbytoth/projects/show/venv/bin/python3.12
+#!/Users/bobby/Coding/TheShowProject/venv/bin/python
 # -*- coding: utf-8 -*-
 import re
 import sys
