@@ -10,13 +10,15 @@ def fetch_equipment_listings():
     # Get rarity from request parameters, default to 'diamond' if not provided
     rarity = request.args.get('rarity', 'diamond')
     cardType = request.args.get('type', 'mlb_card')
+    page = request.args.get('page', '1')
     # Construct the API request URL
-    api_url = 'https://mlb23.theshow.com/apis/listings.json'
+    api_url = 'https://mlb25.theshow.com/apis/listings.json'
     params = {
         'type': cardType,
         'rarity': rarity,
         'sort': 'best_sell_price',
-        'order': 'desc'
+        'order': 'desc',
+        'page': page
     }
 
     # Make the request to the external API
